@@ -1,5 +1,5 @@
 {
-  "name": "pISSStream-vscode",
+  "name": "pissstream-vscode",
   "displayName": "pISSS Stream VS Code",
   "description": "Displays how full the ISS's urine tank is",
   "version": "0.0.1",
@@ -10,10 +10,10 @@
     "Other"
   ],
   "activationEvents": [],
-  "main": "./extension.js",
+  "main": "src/extension.js",
   "contributes": {
     "commands": [{
-      "command": "pISSStream-vscode.helloWorld",
+      "command": "pissstream-vscode.helloWorld",
       "title": "Hello World"
     }]
   },
