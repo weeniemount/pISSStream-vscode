@@ -31,23 +31,26 @@ function activate(context) {
 
 	ws.on('message', (data) => {
 		try {
-			const message = data.toString();
-            console.log("Message received:", message);
+            const message = data.toString().trim(); // Trim any leading/trailing whitespace
+			console.log("Message received:", message);
 
-            // Check for the "U,1," pattern
-            if (message.startsWith("U,1,")) {
-                const parts = message.split(",", 4); // Split into a maximum of 4 parts
-                if (parts.length >= 4) {
-                    const fields = parts[3].split("|");
-                    if (fields.length >= 2) {
-                        const value = parseFloat(fields[1]);
-                        console.debug(`Updating progress bar with value: ${value}`);
-                        
-                        // Update the status bar with the percentage value
-                        statusBar.text = `🚀🚽 ${value.toFixed(2)}%`;
-                    }
-                }
-            }
+			// Find the index of "U,1,1," and extract the substring starting from there
+			const index = message.indexOf("U,1,1,");
+			if (index !== -1) {
+				const messageToProcess = message.substring(index); // Get the substring starting from "U,1,1,"
+				
+				const parts = messageToProcess.split(",", 4); // Split into a maximum of 4 parts
+				if (parts.length >= 4) {
+					const fields = parts[3].split("|");
+					if (fields.length >= 2) {
+						const value = parseFloat(fields[1]);
+						console.debug(`Updating progress bar with value: ${value}`);
+						
+						// Update the status bar with the percentage value
+						statusBar.text = `🚀🚽 ${value}%`;
+					}
+				}
+			}
 		} catch (error) {
 			console.error("Error processing message:", error);
 		}
