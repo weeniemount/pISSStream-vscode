@@ -15,6 +15,16 @@ function activate(context) {
 	statusBar.show();
 	context.subscriptions.push(statusBar);
 
+	statusBar.command = 'extension.openPissStation'; // Custom command
+
+    // Register the command in the extension's context
+    const disposable = vscode.commands.registerCommand('extension.openPissStation', () => {
+        const url = 'https://demos.lightstreamer.com/ISSLive/';  // Replace with your desired URL
+        vscode.env.openExternal(vscode.Uri.parse(url));
+    });
+
+    context.subscriptions.push(disposable);
+
 	// Connect to WebSocket
 	const WEBSOCKET_PROTOCOL = "TLCP-2.4.0.lightstreamer.com"; 
 	const ws = new WebSocket("wss://push.lightstreamer.com/lightstreamer", WEBSOCKET_PROTOCOL);
@@ -32,7 +42,7 @@ function activate(context) {
 	ws.on('message', (data) => {
 		try {
             const message = data.toString().trim(); // Trim any leading/trailing whitespace
-			console.log("Message received:", message);
+			//console.log("Message received:", message);
 
 			// Find the index of "U,1,1," and extract the substring starting from there
 			const index = message.indexOf("U,1,1,");
