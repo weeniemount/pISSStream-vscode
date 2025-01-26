@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 const vscode = require('vscode');
+const WebSocket = require("ws");
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -9,11 +10,65 @@ const vscode = require('vscode');
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-
 	const statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-	statusBar.text = "🚀🚽";
+	statusBar.text = "🚀🚽 Loading...";
 	statusBar.show();
 	context.subscriptions.push(statusBar);
+
+	// Connect to WebSocket
+	const WEBSOCKET_PROTOCOL = "TLCP-2.4.0.lightstreamer.com"; 
+	const ws = new WebSocket("wss://push.lightstreamer.com/lightstreamer", WEBSOCKET_PROTOCOL);
+
+	ws.on("open", () => {
+		const createSessionMsg = "create_session\r\nLS_adapter_set=ISSLIVE&LS_cid=GodotpISSStream%20v1.0&LS_send_sync=false&LS_cause=api\r\n";
+		ws.send(createSessionMsg);
+		console.log("Session creation message sent.");
+	
+		const subscribeMsg = "control\r\nLS_reqId=1&LS_op=add&LS_subId=1&LS_mode=MERGE&LS_group=NODE3000005&LS_schema=TimeStamp%20Value%20Status.Class%20Status.Indicator%20Status.Color%20CalibratedData&LS_snapshot=true&LS_requested_max_frequency=unlimited&LS_ack=false\r\n";
+		ws.send(subscribeMsg);
+		console.log("Subscription message sent.");
+	});
+
+	ws.on('message', (data) => {
+		try {
+			const message = data.toString();
+            console.log("Message received:", message);
+
+            // Check for the "U,1," pattern
+            if (message.startsWith("U,1,")) {
+                const parts = message.split(",", 4); // Split into a maximum of 4 parts
+                if (parts.length >= 4) {
+                    const fields = parts[3].split("|");
+                    if (fields.length >= 2) {
+                        const value = parseFloat(fields[1]);
+                        console.debug(`Updating progress bar with value: ${value}`);
+                        
+                        // Update the status bar with the percentage value
+                        statusBar.text = `🚀🚽 ${value.toFixed(2)}%`;
+                    }
+                }
+            }
+		} catch (error) {
+			console.error("Error processing message:", error);
+		}
+	});
+	
+
+	ws.on("error", (error) => {
+		console.error("WebSocket error:", error);
+		statusBar.text = "🚀🚽 Error!";
+	});
+
+	ws.on("close", () => {
+		console.log("WebSocket connection closed.");
+		statusBar.text = "🚀🚽 Disconnected";
+	});
+
+	context.subscriptions.push({
+		dispose: () => {
+			ws.close();
+		},
+	});
 }
 
 // This method is called when your extension is deactivated
