@@ -1,6 +1,8 @@
 # pISSStream for VS Code
  Displays how full the ISS's urine tank is.
 
+![Screenshot](src/images/screenshot.png)
+
 # Info
 
 Grabs urine data from ``wss://push.lightstreamer.com/lightstreamer`` and displays it from the comfort of your status bar.

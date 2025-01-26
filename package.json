@@ -1,7 +1,13 @@
 {
   "name": "pissstream-vscode",
-  "displayName": "pISSS Stream VS Code",
+  "publisher": "weeniemount",
+  "icon": "src/images/icon.png",
+  "displayName": "pISS Stream VS Code",
   "description": "Displays how full the ISS's urine tank is",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/weeniemount/pissstream-vscode"
+  },
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.96.0"
